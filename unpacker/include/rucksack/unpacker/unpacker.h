@@ -40,5 +40,6 @@ void rucksack_unpacker_write_file(const uint16_t *name, const void *data, size_t
  * Executes a file.
  *
  * @param name the name of the file to execute
+ * @param working_dir the directory the execute the file in, may be NULL
  */
-void rucksack_unpacker_execute_file(const char *name);
+void rucksack_unpacker_execute_file(const char *name, const char *working_dir);

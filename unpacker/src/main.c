@@ -52,6 +52,7 @@ int main(int argc, const char **argv) {
 
     rucksack_config_entry_t *config = NULL;
     char *execute_after = NULL;
+    char *execute_working_dir = NULL;
 
     if(config_buffer) {
         config = rucksack_decode_config(config_buffer);
@@ -61,6 +62,12 @@ int main(int argc, const char **argv) {
                 execute_after = malloc(entry->value_size + 1);
                 memcpy(execute_after, entry->value, entry->value_size);
                 execute_after[entry->value_size] = '\0';
+            }
+
+            if(extended_memcmp(entry->key, entry->key_size, "working-dir", 11) == 0) {
+                execute_working_dir = malloc(entry->value_size + 1);
+                memcpy(execute_working_dir, entry->value, entry->value_size);
+                execute_working_dir[entry->value_size] = '\0';
             }
         }
     }
@@ -136,8 +143,12 @@ int main(int argc, const char **argv) {
     free(look_stream.buf);
 
     if(execute_after) {
-        rucksack_unpacker_execute_file(execute_after);
+        rucksack_unpacker_execute_file(execute_after, execute_working_dir);
         free(execute_after);
+    }
+
+    if(execute_working_dir) {
+        free(execute_working_dir);
     }
 
     if(config) {

@@ -74,7 +74,7 @@ void rucksack_unpacker_write_file(const uint16_t *name, const void *data, size_t
     SetFileAttributesW(name, attributes);
 }
 
-void rucksack_unpacker_execute_file(const char *name) {
+void rucksack_unpacker_execute_file(const char *name, const char *working_dir) {
     STARTUPINFOA startup_info;
     ZeroMemory(&startup_info, sizeof(STARTUPINFOA));
     startup_info.cb = sizeof(STARTUPINFOA);
@@ -82,7 +82,7 @@ void rucksack_unpacker_execute_file(const char *name) {
     PROCESS_INFORMATION process_information;
     ZeroMemory(&process_information, sizeof(PROCESS_INFORMATION));
 
-    BOOL ok = CreateProcessA(name, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_information);
+    BOOL ok = CreateProcessA(name, NULL, NULL, NULL, FALSE, 0, NULL, working_dir, &startup_info, &process_information);
     if(!ok) {
         fprintf(stderr, "CreateProcessA failed\n");
         exit(1);
