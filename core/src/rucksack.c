@@ -35,11 +35,11 @@ void rucksack_encode_config(const rucksack_config_entry_t *entries, void *out) {
     uint32_t i;
     for(i = 0; entries[i].key != NULL; i++) {
         encode_uint32_t(&write_head, buf, entries[i].key_size);
-        memcpy(out + write_head, entries[i].key, entries[i].key_size);
+        memcpy(buf + write_head, entries[i].key, entries[i].key_size);
         write_head += entries[i].key_size;
 
         encode_uint32_t(&write_head, buf, entries[i].value_size);
-        memcpy(out + write_head, entries[i].value, entries[i].value_size);
+        memcpy(buf + write_head, entries[i].value, entries[i].value_size);
         write_head += entries[i].value_size;
     }
 
