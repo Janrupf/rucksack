@@ -1,0 +1,73 @@
+name: CI
+on: [ push ]
+
+jobs:
+  build-binaries-unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
+
+    name: ${{ matrix.os }} build
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Configure build with CMake
+        shell: bash
+        run: |
+          mkdir cmake-build-release
+          cd cmake-build-release
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+      - name: Build with CMake
+        shell: bash
+        working-directory: cmake-build-release
+        run: |
+          cmake --build . --parallel
+      - name: Collect outputs
+        shell: bash
+        run: |
+          mkdir outputs
+          cp cmake-build-release/packer/rucksack-packer outputs/
+          cp cmake-build-release/unpacker/rucksack-unpacker outputs/
+      - name: Upload outputs
+        uses: actions/upload-artifact@v2
+        with:
+          name: rucksack-release-${{ github.sha }}
+          path: outputs/*
+
+  build-binaries-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest ]
+
+    name: ${{ matrix.os }} build
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Configure build with CMake
+        shell: bash
+        run: |
+          mkdir cmake-build-release
+          cd cmake-build-release
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+      - name: Build with CMake
+        shell: bash
+        working-directory: cmake-build-release
+        run: |
+          cmake --build . --parallel --config Release
+      - name: Collect outputs
+        shell: bash
+        run: |
+          mkdir outputs
+          cp cmake-build-release/packer/Release/rucksack-packer.exe outputs/
+          cp cmake-build-release/unpacker/Release/rucksack-unpacker.exe outputs/
+      - name: Upload outputs
+        uses: actions/upload-artifact@v2
+        with:
+          name: rucksack-release-${{ github.sha }}
+          path: outputs/*
