@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <rucksack/rucksack.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "rucksack/unpacker/unpacker.h"
 

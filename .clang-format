@@ -60,6 +60,8 @@ ForEachMacros:
   - Q_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
+  - Regex:           '^<windows\.h>'
+    Priority:        1
   - Regex:           '^<.*>'
     Priority:        2
   - Regex:           '^<.*\.h(pp)?>'

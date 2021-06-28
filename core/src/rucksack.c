@@ -1,7 +1,7 @@
 #include "rucksack/rucksack.h"
 
-#include <string.h>
 #include <malloc.h>
+#include <string.h>
 
 static void encode_uint32_t(size_t *write_head, char *buf, uint32_t value) {
     buf[(*write_head)++] = (char) (value & 0x000000FF);
@@ -11,8 +11,12 @@ static void encode_uint32_t(size_t *write_head, char *buf, uint32_t value) {
 }
 
 static uint32_t decode_uint32_t(size_t *read_head, const char *buf) {
-    uint32_t value =
-        (buf[(*read_head)++] | (buf[(*read_head)++] << 8) | (buf[(*read_head)++] << 16) | (buf[(*read_head)++] << 24));
+    uint32_t a = (uint32_t) buf[(*read_head)++];
+    uint32_t b = (uint32_t) buf[(*read_head)++];
+    uint32_t c = (uint32_t) buf[(*read_head)++];
+    uint32_t d = (uint32_t) buf[(*read_head)++];
+
+    uint32_t value = (a) | (b << 8) | (c << 16) | (d << 24);
 
     return value;
 }

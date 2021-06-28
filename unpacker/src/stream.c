@@ -1,22 +1,31 @@
+#ifdef __APPLE__
+#    include <mach-o/dyld.h>
+#elif defined(_WIN32)
+#    include <windows.h>
+#else
+#    include <sys/unistd.h>
+#endif
+
 #include <malloc.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "rucksack/unpacker/unpacker.h"
 
-#ifdef __APPLE__
-#    include <mach-o/dyld.h>
-#else
-#    include <sys/unistd.h>
-#endif
-
 #define PATH_BUFFER_LENGTH 4096
 
+#ifdef _WIN32
+static const char *find_own_executable_path() {
+    char *own_executable_path;
+    _get_pgmptr(&own_executable_path);
+    return own_executable_path;
+}
+#else
 static const char *find_own_executable_path() {
     char *own_executable_path = malloc(PATH_BUFFER_LENGTH);
-
-#ifdef __APPLE__
+#if defined(__APPLE__)
     uint32_t buffer_size = PATH_BUFFER_LENGTH;
 
     if(_NSGetExecutablePath(own_executable_path, &buffer_size) == -1) {
@@ -38,6 +47,8 @@ static const char *find_own_executable_path() {
 
     return own_executable_path;
 }
+
+#endif
 
 struct rucksack_unpacker_stream {
     ISeekInStream vt;
@@ -160,7 +171,7 @@ ISeekInStream *rucksack_unpacker_open_stream(void const **config) {
     uint64_t config_size = size_buffers[1];
 
     uint64_t rucksack_size = data_size + config_size;
-    fseek(opened, -(16 + (int64_t) config_size), SEEK_CUR);
+    fseek(opened, (long) -(16 + (int64_t) config_size), SEEK_CUR);
 
     void *config_buffer = config_size ? malloc(config_size) : NULL;
     if(config_size != 0) {

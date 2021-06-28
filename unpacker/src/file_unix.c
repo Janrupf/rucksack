@@ -116,10 +116,12 @@ static void recursive_mkdir(const char *directory_name) {
 
     for(char *search = temporary_buffer + 1; *search; search++) {
         if(*search == '/') {
+            *search = '\0';
             if(mkdir(temporary_buffer, S_IRWXU) == -1 && errno != EEXIST) {
                 perror("mkdir failed");
                 exit(1);
             }
+            *search = '/';
         }
     }
 
