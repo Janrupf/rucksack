@@ -14,7 +14,9 @@ project(rucksack C)
 # Set CMake options #
 #####################
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-set(CMAKE_C_STANDARD 11)
+if(NOT WIN32) # Workaround for bug in Windows SDK...
+    set(CMAKE_C_STANDARD 11)
+endif()
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 #########################
