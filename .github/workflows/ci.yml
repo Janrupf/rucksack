@@ -8,7 +8,7 @@ jobs:
       matrix:
         os: [ macos-latest, ubuntu-latest ]
 
-    name: ${{ matrix.os }} build
+    name: ${{ matrix.os }}-x64 build
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -29,8 +29,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p outputs/${{ matrix.os }}
-          cp cmake-build-release/packer/rucksack-packer outputs/${{ matrix.os }}
-          cp cmake-build-release/unpacker/rucksack-unpacker outputs/${{ matrix.os }}
+          cp cmake-build-release/packer/rucksack-packer outputs/${{ matrix.os }}/rucksack-packer-x64
+          cp cmake-build-release/unpacker/rucksack-unpacker outputs/${{ matrix.os }}/rucksack-unpacker-x64
       - name: Upload outputs
         uses: actions/upload-artifact@v2
         with:
@@ -42,8 +42,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest ]
+        arch: [ x64, x86 ]
+        include:
+          - arch: x86
+            vs-arch: Win32
+          - arch: x64
+            vs-arch: x64
 
-    name: ${{ matrix.os }} build
+    name: ${{ matrix.os }}-${{ matrix.arch }} build
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -54,7 +60,7 @@ jobs:
         run: |
           mkdir cmake-build-release
           cd cmake-build-release
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DCMAKE_BUILD_TYPE=Release -Thost=x64 -A ${{ matrix.vs-arch }}
       - name: Build with CMake
         shell: bash
         working-directory: cmake-build-release
@@ -64,8 +70,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p outputs/${{ matrix.os }}
-          cp cmake-build-release/packer/Release/rucksack-packer.exe outputs/${{ matrix.os }}
-          cp cmake-build-release/unpacker/Release/rucksack-unpacker.exe outputs/${{ matrix.os }}
+          cp cmake-build-release/packer/Release/rucksack-packer.exe outputs/${{ matrix.os }}/rucksack-packer-${{ matrix.arch }}.exe
+          cp cmake-build-release/unpacker/Release/rucksack-unpacker.exe outputs/${{ matrix.os }}/rucksack-unpacker-${{ matrix.arch }}.exe
       - name: Upload outputs
         uses: actions/upload-artifact@v2
         with:
