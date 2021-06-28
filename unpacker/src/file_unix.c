@@ -137,12 +137,10 @@ void rucksack_unpacker_create_directory(const uint16_t *name, uint32_t attribute
     char *directory_name = utf16_to_utf8(name);
     recursive_mkdir(directory_name);
 
-#if defined(__unix__) || defined(__APPLE__)
     if(attributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
         uint16_t real_attributes = attributes >> 16;
         chmod(directory_name, real_attributes);
     }
-#endif
 
     free(directory_name);
 }
@@ -164,22 +162,30 @@ void rucksack_unpacker_write_file(const uint16_t *name, const void *data, size_t
 
     fclose(file);
 
-#if defined(__unix__) || defined(__APPLE__)
     if(attributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
         uint16_t real_attributes = attributes >> 16;
         chmod(file_name, real_attributes);
     }
-#endif
 
     free(file_name);
 }
 
-void rucksack_unpacker_execute_file(const char *name) {
-#ifndef _WIN32
+void rucksack_unpacker_execute_file(const char *name, const char *working_dir) {
     char *argv[2] = {(char *) name, NULL};
-    execv(name, argv);
+    char *full_file_path = realpath(name, NULL);
+    if(!full_file_path) {
+        perror("Failed to resolve path for file to execute");
+        exit(1);
+    }
+
+    if(working_dir) {
+        if(chdir(working_dir) == -1) {
+            perror("Failed to change working directory to start child process");
+            exit(1);
+        }
+    }
+    execv(full_file_path, argv);
 
     perror("execve failed");
     exit(1);
-#endif
 }

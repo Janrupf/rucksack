@@ -24,8 +24,9 @@ static const char *find_own_executable_path() {
 }
 #else
 static const char *find_own_executable_path() {
-    char *own_executable_path = malloc(PATH_BUFFER_LENGTH);
+    char *own_executable_path;
 #if defined(__APPLE__)
+    own_executable_path = malloc(PATH_BUFFER_LENGTH);
     uint32_t buffer_size = PATH_BUFFER_LENGTH;
 
     if(_NSGetExecutablePath(own_executable_path, &buffer_size) == -1) {
@@ -35,14 +36,12 @@ static const char *find_own_executable_path() {
         _NSGetExecutablePath(own_executable_path, &buffer_size);
     }
 #else
-    ssize_t length = readlink("/proc/self/exe", own_executable_path, PATH_BUFFER_LENGTH - 1);
+    own_executable_path = realpath("/proc/self/exe", NULL);
 
-    if(length == -1) {
-        perror("readlink(\"/proc/self/exe\") failed");
+    if(!own_executable_path) {
+        perror("realpath(\"/proc/self/exe\") failed");
         exit(1);
     }
-
-    own_executable_path[length] = '\0';
 #endif
 
     return own_executable_path;
