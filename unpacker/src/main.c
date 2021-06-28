@@ -1,10 +1,10 @@
 #include <7z.h>
 #include <7zCrc.h>
-#include <malloc.h>
 #include <memory.h>
 #include <rucksack/rucksack.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "rucksack/unpacker/unpacker.h"
 

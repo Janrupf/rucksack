@@ -1,6 +1,6 @@
 #include "rucksack/rucksack.h"
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 static void encode_uint32_t(size_t *write_head, char *buf, uint32_t value) {

@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <rucksack/rucksack.h>
 #include <stdint.h>
 #include <stdio.h>

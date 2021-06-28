@@ -2,11 +2,8 @@
 #    include <mach-o/dyld.h>
 #elif defined(_WIN32)
 #    include <windows.h>
-#else
-#    include <sys/unistd.h>
 #endif
 
-#include <malloc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +22,7 @@ static const char *find_own_executable_path() {
 #else
 static const char *find_own_executable_path() {
     char *own_executable_path;
-#if defined(__APPLE__)
+#    if defined(__APPLE__)
     own_executable_path = malloc(PATH_BUFFER_LENGTH);
     uint32_t buffer_size = PATH_BUFFER_LENGTH;
 
@@ -35,14 +32,14 @@ static const char *find_own_executable_path() {
 
         _NSGetExecutablePath(own_executable_path, &buffer_size);
     }
-#else
+#    else
     own_executable_path = realpath("/proc/self/exe", NULL);
 
     if(!own_executable_path) {
         perror("realpath(\"/proc/self/exe\") failed");
         exit(1);
     }
-#endif
+#    endif
 
     return own_executable_path;
 }
